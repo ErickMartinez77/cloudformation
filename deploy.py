@@ -11,36 +11,42 @@ try:
 except getopt.error as err:
     print (str(err))
     sys.exit(2)
- 
-###############################################
+
+################################################################################
 
 import boto3
 
-PROJECT = "upb-cloudformation"
+PROJECT = "upb-cloudformation4"
+BUCKET_NAME = f"{PROJECT}-bucket-123345"
 
 cf = boto3.client('cloudformation')
 
-with open('template.yaml','r') as file:
-    template=file.read()
-        
-#if command == "create" or command == "-c":
-if command in ("--create","-c"):
+with open('template.yaml', 'r') as file:
+    template = file.read()
+
+
+if command in ("--create", "-c"):
     response = cf.create_stack(
-        StackName = PROJECT,
-        TemplateBody=template
-    )
-    print(response)
-
-
-if command in ("--update","-u"):
-    response = cf.update_stack(
-        StackName = PROJECT,
-        TemplateBody = template
+        StackName=PROJECT,
+        TemplateBody= template,
+        Parameters=[
+            {
+                'ParameterKey': 'BuketName',
+                'ParameterValue': BUCKET_NAME
+            },
+        ]
     )
     print(response)
     
-if command in ("--delete","-d"):
-    response = cf.delete_stack(StackName = PROJECT)
+if command in ("--update", "-u"):
+    response = cf.update_stack(
+        StackName=PROJECT,
+        TemplateBody= template
+    )
+    print(response)
+
+if command in ("--delete", "-d"):
+    response = cf.delete_stack(StackName=PROJECT)
     print(response)
     
     
